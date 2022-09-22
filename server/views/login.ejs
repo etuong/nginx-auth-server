@@ -8,10 +8,11 @@
   </head>
   <body>
     <div class="container" id="content" style="display: none">
-      <h1>Login</h1>
+      <h1>You came from <%= referer %></h1>
+      <h2>Login</h2>
       <input type="password" name="password" id="password" />
       <input type="submit" value="Login" id="login" />
-      <p id="message"></p>
+      <p id="message" style="color: red"></p>
     </div>
 
     <script>
@@ -19,16 +20,20 @@
       content.style.display = "block";
       document.title = "Log in to " + location.host;
 
-      // post password to /auth
       const login = (password) => {
         fetch("/login", {
           method: "POST",
+          withCredentials: true,
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ password }),
         })
           .then((response) => {
-            // check for auth failure for rejected credentials
-            if (response.status === 401) return false;
+            if (response.status === 401) {
+              const message = document.getElementById("message");
+              message.innerText = "Authorization failed - Invalid credentials";
+              return false;
+            }
 
             // check for auth failure for other reasons
             if (response.status !== 200) return false;
@@ -42,14 +47,9 @@
               window.location.href = "/logged-in";
               return;
             }
-
-            // auth failure, give feedback to user
-            const message = document.getElementById("message");
-            message.innerText = "Authorization failed";
           });
       };
 
-      // handle password text field
       const input = document.getElementById("password");
       input.focus();
       input.addEventListener("keyup", (e) => {
@@ -61,7 +61,6 @@
         }
       });
 
-      // handle submit / login button
       const submit = document.getElementById("login");
       submit.addEventListener("click", (e) => {
         e.preventDefault();
@@ -70,10 +69,5 @@
         login(password);
       });
     </script>
-
-    <noscript
-      >JavaScript is not detected or enabled but it is required for this
-      site.</noscript
-    >
   </body>
 </html>

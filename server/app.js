@@ -5,8 +5,15 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const checkAuth = require("./authentication.js");
-
+const cors = require("cors");
 const app = express();
+
+app.set("view engine", "ejs");
+app.use(morgan("dev"));
+app.use(express.static("public"));
+app.use(cookieParser());
+app.use(express.json());
+app.use(cors({ origin: true, credentials: true }));
 
 // rate limiter used on auth attempts
 const apiLimiter = rateLimit({
@@ -37,7 +44,6 @@ if (!tokenSecret) {
 // middleware to check auth status
 const jwtVerify = (req, res, next) => {
   const token = req.cookies.authToken;
-  console.log(token);
 
   // check for missing token
   if (!token) return next();
@@ -55,14 +61,7 @@ const jwtVerify = (req, res, next) => {
   });
 };
 
-app.set("view engine", "ejs");
-app.use(morgan("dev"));
-app.use(express.static("public"));
-app.use(cookieParser());
-app.use(express.json());
-
-// check for JWT cookie from requestor
-// if there is a valid JWT, req.user is assigned
+// Check for JWT cookie from requestor, if there is a valid JWT, req.user is assigned
 app.use(jwtVerify);
 
 app.get("/", (req, res) => {
@@ -90,19 +89,15 @@ app.get("/login", (req, res) => {
   });
 });
 
-// endpoint called by NGINX sub request
+// Called by Nginx sub-request
 // expect JWT in cookie 'authToken'
 app.get("/auth", (req, res, next) => {
-  // parameters from original client request
-  // these could be used for validating request
   const requestUri = req.headers["x-original-uri"];
   const remoteAddr = req.headers["x-original-remote-addr"];
   const host = req.headers["x-original-host"];
 
   if (req.user) {
     // user is already authenticated, refresh cookie
-
-    // generate JWT
     const token = jwt.sign({ user: req.user }, tokenSecret, {
       expiresIn: `${expiryDays}d`,
     });
@@ -116,15 +111,13 @@ app.get("/auth", (req, res, next) => {
 
     return res.sendStatus(200);
   } else {
-    // not authenticated
-    return res.sendStatus(400);
+    return res.sendStatus(401);
   }
 });
 
-// endpoint called by login page, username and password posted as JSON body
 app.post("/login", apiLimiter, (req, res) => {
   const { username, password } = req.body;
-  
+
   if (checkAuth(username, password)) {
     // successful auth
     const user = username || defaultUser;
@@ -137,14 +130,14 @@ app.post("/login", apiLimiter, (req, res) => {
     // set JWT as cookie, 7 day age
     res.cookie("authToken", token, {
       httpOnly: true,
-      maxAge: 1000 * 86400 * expiryDays, // milliseconds
+      maxAge: 1000 * 86400 * expiryDays,
       secure: cookieSecure,
     });
     return res.send({ status: "ok" });
   }
 
-  // failed auth
-  res.status(401).send({ status: "fail", message: "Invalid credentials" });
+  res
+    .sendStatus(401)
 });
 
 app.get("/logout", (req, res) => {
@@ -157,7 +150,7 @@ app.post("/logout", (req, res) => {
   res.sendStatus(200);
 });
 
-// default 404
+// Default 404
 app.use((req, res, next) => {
   res.status(404).send("No such page");
 });
