@@ -4,29 +4,44 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
-    <%- include('head') %>
+    <style>
+      input[type="text"],
+      input[type="password"],
+      input[type="submit"] {
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: 20px;
+      }
+    </style>
   </head>
   <body>
-    <div class="container" id="content" style="display: none">
+    <div class="container" id="content">
       <h1>You came from <%= referer %></h1>
-      <h2>Login</h2>
-      <input type="password" name="password" id="password" />
+      <h2>Login Page</h2>
+      <input type="text" name="user" id="user" placeholder="Username" />
+      <input
+        type="password"
+        name="password"
+        id="password"
+        placeholder="Password"
+      />
       <input type="submit" value="Login" id="login" />
       <p id="message" style="color: red"></p>
     </div>
 
     <script>
-      const content = document.getElementById("content");
-      content.style.display = "block";
       document.title = "Log in to " + location.host;
 
-      const login = (password) => {
+      const login = (user, password) => {
         fetch("/login", {
           method: "POST",
           withCredentials: true,
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password }),
+          body: JSON.stringify({ user, password }),
         })
           .then((response) => {
             if (response.status === 401) {
@@ -50,23 +65,14 @@
           });
       };
 
-      const input = document.getElementById("password");
-      input.focus();
-      input.addEventListener("keyup", (e) => {
-        e.preventDefault();
-        if (e.key === "Enter") {
-          const password = input.value;
-          input.value = "";
-          login(password);
-        }
-      });
-
       const submit = document.getElementById("login");
       submit.addEventListener("click", (e) => {
         e.preventDefault();
-        const password = input.value;
-        input.value = "";
-        login(password);
+        const userField = document.getElementById("user");
+        const passwordField = document.getElementById("password");
+        const user = userField.value;
+        const password = passwordField.value;
+        login(user, password);
       });
     </script>
   </body>

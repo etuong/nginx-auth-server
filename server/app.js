@@ -10,7 +10,6 @@ const app = express();
 
 app.set("view engine", "ejs");
 app.use(morgan("dev"));
-app.use(express.static("public"));
 app.use(cookieParser());
 app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
@@ -28,7 +27,6 @@ const apiLimiter = rateLimit({
 dotenv.config();
 
 const port = process.env.AUTH_PORT || 3000;
-const defaultUser = "user";
 const expiryDays = 7;
 const cookieSecure =
   "AUTH_COOKIE_SECURE" in process.env
@@ -85,17 +83,13 @@ app.get("/login", (req, res) => {
 
   // user not logged in, show login interface
   return res.render("login", {
-    referer: requestUri ? `${host}/${requestUri}` : "/",
+    referer: requestUri ? `${host}${requestUri}` : "/",
   });
 });
 
 // Called by Nginx sub-request
 // expect JWT in cookie 'authToken'
 app.get("/auth", (req, res, next) => {
-  const requestUri = req.headers["x-original-uri"];
-  const remoteAddr = req.headers["x-original-remote-addr"];
-  const host = req.headers["x-original-host"];
-
   if (req.user) {
     // user is already authenticated, refresh cookie
     const token = jwt.sign({ user: req.user }, tokenSecret, {
@@ -108,7 +102,7 @@ app.get("/auth", (req, res, next) => {
       maxAge: 1000 * 86400 * expiryDays, // milliseconds
       secure: cookieSecure,
     });
-
+    
     return res.sendStatus(200);
   } else {
     return res.sendStatus(401);
@@ -116,13 +110,9 @@ app.get("/auth", (req, res, next) => {
 });
 
 app.post("/login", apiLimiter, (req, res) => {
-  const { username, password } = req.body;
+  const { user, password } = req.body;
 
-  if (checkAuth(username, password)) {
-    // successful auth
-    const user = username || defaultUser;
-
-    // generate JWT
+  if (checkAuth(user, password)) {
     const token = jwt.sign({ user }, tokenSecret, {
       expiresIn: `${expiryDays}d`,
     });
@@ -136,8 +126,7 @@ app.post("/login", apiLimiter, (req, res) => {
     return res.send({ status: "ok" });
   }
 
-  res
-    .sendStatus(401)
+  res.sendStatus(401);
 });
 
 app.get("/logout", (req, res) => {
