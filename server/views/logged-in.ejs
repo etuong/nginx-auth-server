@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Logged In</title>
   </head>
+
   <body>
     <div class="container" id="content">
       <button id="logout">Log Out</button>
@@ -22,14 +23,11 @@
         fetch("/logout", {
           method: "POST",
         }).then((response) => {
-          // check for auth failure for other reasons
           if (response.status !== 200) {
-            // auth failed
             alert("Log out failed");
             return;
           }
 
-          // logout successful, redirect to login
           window.location.href = "/login";
         });
       };

@@ -14,12 +14,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 
-// rate limiter used on auth attempts
+// Rate limiter used on auth attempts
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 15, // limit each IP to 15 requests per windowMs
   message: {
-    status: "fail",
+    status: "Fail",
     message: "Too many requests, please try again later",
   },
 });
@@ -39,16 +39,15 @@ if (!tokenSecret) {
   process.exit(1);
 }
 
-// middleware to check auth status
+// Middleware to check auth status
 const jwtVerify = (req, res, next) => {
   const token = req.cookies.authToken;
 
-  // check for missing token
   if (!token) return next();
 
   jwt.verify(token, tokenSecret, (err, decoded) => {
     if (err) {
-      // e.g malformed token, bad signature etc - clear the cookie also
+      // e.g malformed token, bad signature etc - clear the cookie 
       console.log(err);
       res.clearCookie("authToken");
       return res.status(403).send(err);
@@ -72,34 +71,31 @@ app.get("/logged-in", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  // parameters from original client request
-  // these could be used for validating request
+  // Parameters from original client request
   const requestUri = req.headers["x-original-uri"];
   const remoteAddr = req.headers["x-original-remote-addr"];
   const host = req.headers["x-original-host"];
 
-  // check if user is already logged in
   if (req.user) return res.redirect("/logged-in");
 
-  // user not logged in, show login interface
   return res.render("login", {
     referer: requestUri ? `${host}${requestUri}` : "/",
   });
 });
 
 // Called by Nginx sub-request
-// expect JWT in cookie 'authToken'
+// Expect JWT in cookie 'authToken'
 app.get("/auth", (req, res, next) => {
   if (req.user) {
-    // user is already authenticated, refresh cookie
+    // User is already authenticated, refresh cookie
     const token = jwt.sign({ user: req.user }, tokenSecret, {
       expiresIn: `${expiryDays}d`,
     });
 
-    // set JWT as cookie, 7 day age
+    // Set JWT as cookie, 7 day age
     res.cookie("authToken", token, {
       httpOnly: true,
-      maxAge: 1000 * 86400 * expiryDays, // milliseconds
+      maxAge: 1000 * 86400 * expiryDays,
       secure: cookieSecure,
     });
     

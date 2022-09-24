@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,6 +18,7 @@
       }
     </style>
   </head>
+
   <body>
     <div class="container" id="content">
       <h1>You came from <%= referer %></h1>
@@ -50,15 +52,12 @@
               return false;
             }
 
-            // check for auth failure for other reasons
             if (response.status !== 200) return false;
 
-            // auth okay
             return response.json();
           })
           .then((data) => {
             if (data && data.status === "ok") {
-              // auth success, cookie should be set
               window.location.href = "/logged-in";
               return;
             }
