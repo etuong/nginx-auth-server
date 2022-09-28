@@ -5,14 +5,12 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 const checkAuth = require("./authentication.js");
-const cors = require("cors");
 const app = express();
 
 app.set("view engine", "ejs");
 app.use(morgan("dev"));
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors({ origin: true, credentials: true }));
 
 // Rate limiter used on auth attempts
 const apiLimiter = rateLimit({
@@ -47,7 +45,7 @@ const jwtVerify = (req, res, next) => {
 
   jwt.verify(token, tokenSecret, (err, decoded) => {
     if (err) {
-      // e.g malformed token, bad signature etc - clear the cookie 
+      // e.g malformed token, bad signature etc - clear the cookie
       console.log(err);
       res.clearCookie("authToken");
       return res.status(403).send(err);
@@ -98,7 +96,7 @@ app.get("/auth", (req, res, next) => {
       maxAge: 1000 * 86400 * expiryDays,
       secure: cookieSecure,
     });
-    
+
     return res.sendStatus(200);
   } else {
     return res.sendStatus(401);

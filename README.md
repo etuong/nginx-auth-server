@@ -2,7 +2,7 @@
 
 This repository is a prototype to configure Nginx as a reverse proxy to authenticate before accessing assets and resources of a website.
 
-To get started, 
+To get started,
 
 1. Run the server app
 1. Build and run the client application on Nginx using the Nginx configuration file (nginx.conf).
@@ -16,4 +16,19 @@ To get started,
 - JWT updated with new expiry each time a user visits protected area.
 
 ## Notes
+
 You can set up your own authentication mechanism in the server/authentication.js file. For demo, I am using just a simple username and password but you can, for example, authenticate against a database.
+
+## Load Balancer
+
+To demo load balancer, please build a Docker image of the React app. Dockerfile is included in the client/ folder.
+
+Once the image is built, you'll want to run four different containers.
+
+```
+docker run -p 3001:3000 -e REACT_APP_COLOR=green react
+docker run -p 3002:3000 -e REACT_APP_COLOR=red react
+docker run -p 3003:3000 -e REACT_APP_COLOR=yellow react
+docker run -p 3004:3000 -e REACT_APP_COLOR=blue react
+```
+
