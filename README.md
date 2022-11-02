@@ -19,6 +19,10 @@ To get started,
 
 You can set up your own authentication mechanism in the server/authentication.js file. For demo, I am using just a simple username and password but you can, for example, authenticate against a database.
 
+## Role Based Access Control
+
+In computer systems security, role-based access control or role-based security is an approach to restricting system access to authorized users. It is an approach to implement mandatory access control or discretionary access control. This app supports a prototype of RBAC. If the username is authenticated and allowed, the App logo will appear.
+
 ## Load Balancer
 
 To demo load balancer, please build a Docker image of the React app. Dockerfile is included in the client/ folder.
@@ -31,4 +35,3 @@ docker run -p 3002:3000 -e REACT_APP_COLOR=red react
 docker run -p 3003:3000 -e REACT_APP_COLOR=yellow react
 docker run -p 3004:3000 -e REACT_APP_COLOR=blue react
 ```
-
