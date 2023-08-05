@@ -4,7 +4,7 @@ It can be used for protecting web sites with NGINX subrequest authentication.
 
 ## Configure `.env`
 
-- `AUTH_PORT` -  Listening port of application (default: 3000)
+- `AUTH_PORT` - Listening port of application (default: 3000)
 - `AUTH_USERNAME` - Authentication username
 - `AUTH_PASSWORD` - Authentication password
 - `AUTH_TOKEN_SECRET` - [JWT secret](https://en.wikipedia.org/wiki/JSON_Web_Token#Structure)
@@ -12,10 +12,7 @@ It can be used for protecting web sites with NGINX subrequest authentication.
 
 Refer to [dotenv documentation](https://github.com/motdotla/dotenv#readme) for formatting.
 
-
 ## Development
-
-Install [nodemon](https://nodemon.io/) globally.
 
 Install dependencies
 
@@ -33,6 +30,5 @@ Be aware that the authentication cookie used by default uses the [secure attribu
 
 ## References
 
-- [NGINX sub request authentication](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/)
+- [Nginx sub request authentication](https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/)
 - [Using JWTs with NodeJS tutorial](https://www.digitalocean.com/community/tutorials/nodejs-jwt-expressjs)
-- [jsonwebtoken node module](https://github.com/auth0/node-jsonwebtoken)
