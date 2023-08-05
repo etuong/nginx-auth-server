@@ -1,4 +1,5 @@
 import rbac from "rbacjs";
+
 const rolesConfig = [
   {
     roles: ["USER"],
@@ -9,4 +10,5 @@ const rolesConfig = [
     permissions: ["DELETE", "READ", "EDIT", "CREATE"],
   },
 ];
+
 export default new rbac({ rolesConfig });
