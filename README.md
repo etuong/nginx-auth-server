@@ -4,8 +4,8 @@ This repository is a prototype to configure Nginx as a reverse proxy to authenti
 
 To get started,
 
-1. Run the server app
-1. Build the client app
+1. Run the server app (default localhost:3000)
+1. Build the client app (Nginx calls the build directory via nginx.conf)
 1. Run Nginx using the configuration file (nginx.conf) on this repo.
 
 ## System
@@ -31,8 +31,8 @@ To demo load balancer, please build a Docker image of the React app. Dockerfile 
 Once the image is built, you'll want to run four different containers.
 
 ```
-docker run -p 3001:3000 -e REACT_APP_COLOR=green react
-docker run -p 3002:3000 -e REACT_APP_COLOR=red react
-docker run -p 3003:3000 -e REACT_APP_COLOR=yellow react
-docker run -p 3004:3000 -e REACT_APP_COLOR=blue react
+docker run -p 3001:3000 -e REACT_APP_COLOR=green -d {docker_image}
+docker run -p 3002:3000 -e REACT_APP_COLOR=red -d {docker_image}
+docker run -p 3003:3000 -e REACT_APP_COLOR=yellow -d {docker_image}
+docker run -p 3004:3000 -e REACT_APP_COLOR=blue -d {docker_image}
 ```

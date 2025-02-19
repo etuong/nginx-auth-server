@@ -5,7 +5,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Docker
 
 Build Docker image
-`docker build -t nameofyourapp:latest .`
+`docker build -t {name_of_your_app}:latest .`
 
 ## Available Scripts
 
